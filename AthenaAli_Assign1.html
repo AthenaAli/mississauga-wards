@@ -28,6 +28,9 @@
 	 
 	<!--Link to Leaflet JS API-->
 	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+	
+	<!-- Link to jQuery Toolkit-->
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 
 	<!--Styling document elements --> 
 	<style type="text/css">
@@ -89,7 +92,7 @@
 	<!-- Container to display text content -->
 	 <section>
 
-	 	<!-- Heading -->
+	 <!-- Heading -->
         <h1>This is the City of Mississauga</h1>
 
         <!-- Paragraph in Bold-->
@@ -130,6 +133,14 @@
 			fillOpacity: 0.3
 		//When the map loads the text "Downtown Core" apears
 		}).addTo(mymap).bindTooltip("Downtown Core").openTooltip();
+		
+// This loads the GeoJSON map data file 
+$.getJSON('https://raw.githubusercontent.com/AthenaAli/mississauga-wards/master/map.geojson', function(data) {
+geojson = L.geoJson(data, {
+style: style,
+onEachFeature: onEachFeature
+// add GeoJSON layer to the map
+}).addTo(mymap);
 
 	</script>
 
