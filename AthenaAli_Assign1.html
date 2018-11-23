@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+	<!-- Title to appear on the page tab in browser -->
+	<title>Mississauga Ward 4 Map</title>
+
+	<!-- Declare the charecter set of the document -->
+	<meta charset="utf-8" />
+
+	<!-- Describes the author of the page -->
+	<meta name="author" content="Athena Ali">
+
+	<!-- Provides a description of the page -->
+	<meta name="description" content="City of Mississauga">
+
+	<!-- List keywords of page for search engines -->
+	<meta name="keywords" content="Mississauga,City Hall,Civic Center,Downtown,Square One,Square 1,Ward 4,">
+
+	<!-- Sets the viewport-->
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+	<!--Link to Leaflet CSS document-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+	 
+	<!--Link to Leaflet JS API-->
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+
+	<!--Styling document elements --> 
+	<style type="text/css">
+			html {height: 100%}
+			
+			/* Declares map to fill entire page */
+			#mapid { position: absolute;
+				width: 100%; height: 100%}
+
+			/* removes default margins and scroll bars from around the map */
+			body {height: 100%; margin: 0; padding: 0}
+
+			/* Container elements */
+			section {
+	            position: absolute;
+	            right: 10px;
+	            width: 200px;
+	            /* Distance from top */
+	            margin: 15px auto;
+	            padding: 0 15px;
+	            /* (Red, Green, Blue, Transperancy) */
+	            background: rgba(256, 256, 256, 0.4);
+	            border: 1px solid grey;
+	            /* Curved Edges */
+	            border-radius: 5px;
+	            /* Stack order of element. Higher z-index value is placed infront of element with lower value. Ensures Container is on top with 800 */
+	            z-index: 800;
+       		}
+        	/* Paragraph text elements */
+			p {
+			    font-size: .9em;
+			    line-height: 1.5em;
+			 }
+
+			 /* Rule for mobile phones and devices where the browser window is smaller than 768px */
+       		 @media screen and (max-width:768px) {
+           		 body {
+             		 overflow: hidden
+            		}            
+
+            	section {
+             		width: 85%;
+             		bottom:15px;
+             		max-height:100px;
+              		overflow: auto;
+            	}
+        	}   
+	</style>
+
+</head>
+
+
+<body>
+
+
+	<!--Declare map div container to place the map inside on the page -->
+	<div id="mapid"></div>
+
+	<!-- Container to display text content -->
+	 <section>
+
+	 	<!-- Heading -->
+        <h1>This is the City of Mississauga</h1>
+
+        <!-- Paragraph in Bold-->
+        <p><b> Mississauga is a city in the Canadian province of Ontario. It is situated on the shores of Lake Ontario in the Regional Municipality of Peel, bordering Toronto. With a population of 721,599 as of the 2016 census, Mississauga is the sixth-most populous municipality in Canada.</b></p>
+
+        <!-- Second Paragraph with first two words in bold -->
+        <p><b>Demographic:</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+        <!-- Third Paragraphy with simple default text-->
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+    </section>
+
+	<!--Javascript map functions-->
+	<script>
+
+		// Zooms to this location.setView ([lat#, lon#], zoom level) 
+		// The smaller the zoom level number the more zoomed out the map
+		var mymap = L.map('mapid').setView([43.586428, -79.621054], 13);
+
+		// Uses custom tiles taken from https://leaflet-extras.github.io/leaflet-providers/preview/
+		L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+		subdomains: 'abcd',
+		// Lets you zoom in more than the set 13
+		maxZoom: 19
+		}).addTo(mymap);
+
+		// Displays a pin at City Hall Mississauga.
+		L.marker([43.589019,-79.644534]).addTo(mymap)
+		// When you click on the pin it will show text "Mississauga City Hall" in bolded.
+		.bindPopup("<b>Mississauga City Hall</b>");
+
+		//Displays radius of downtown core
+		L.circle([43.589999, -79.641400], 850, {
+			color: 'red',
+			fillColor: '#f03',
+			fillOpacity: 0.3
+		//When the map loads the text "Downtown Core" apears
+		}).addTo(mymap).bindTooltip("Downtown Core").openTooltip();
+
+	</script>
+
+</body>
+
+</html>
