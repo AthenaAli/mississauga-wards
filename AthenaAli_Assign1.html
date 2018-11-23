@@ -134,13 +134,16 @@
 		//When the map loads the text "Downtown Core" apears
 		}).addTo(mymap).bindTooltip("Downtown Core").openTooltip();
 		
-// This loads the GeoJSON map data file 
-$.getJSON('https://raw.githubusercontent.com/AthenaAli/mississauga-wards/master/map.geojson', function(data) {
-geojson = L.geoJson(data, {
-style: style,
-onEachFeature: onEachFeature
-// add GeoJSON layer to the map
-}).addTo(mymap);
+		var geojson;
+		// This loads the GeoJSON map data file 
+		$.getJSON('https://raw.githubusercontent.com/AthenaAli/mississauga-wards/master/map.geojson', function(data) {
+		geojson = L.geoJson(data, {
+		style: style,
+		onEachFeature: onEachFeature
+		// add GeoJSON layer to the map
+		}).addTo(mymap);
+		});
+		
 
 	</script>
 
