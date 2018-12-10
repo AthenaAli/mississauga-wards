@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+	<!-- Title to appear on the page tab in browser -->
+	<title>Mississauga: Wards & Public WiFi</title>
+
+	<!-- Declare the charecter set of the document -->
+	<meta charset="utf-8" />
+
+	<!-- Describes the author of the page -->
+	<meta name="author" content="Athena Ali">
+
+	<!-- Provides a description of the page -->
+	<meta name="description" content="City of Mississauga">
+
+	<!-- List keywords of page for search engines -->
+	<meta name="keywords" content="Mississauga,City, WiFi, Public WiFi, Wifi Hotspot, Public, Wards, Population, Population by Ward">
+
+	<!-- Sets the viewport-->
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+	<!--Link to Leaflet CSS document-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+	 
+	<!--Link to Leaflet JS API-->
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+	
+	<!-- Link to jQuery Toolkit-->
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	<!--Styling document elements --> 
+	<style type="text/css">
+			html {height: 100%}
+			
+			/* Declares map to fill entire page */
+			#mapid { position: absolute;
+				width: 100%; height: 100%}
+
+			/* removes default margins and scroll bars from around the map */
+			body {height: 100%; margin: 0; padding: 0}
+
+
+			/*CSS style for legend */
+			.legend { 
+			  /*position and size of text*/
+			  text-align: left; 
+			  line-height: 18px; 
+			  /*text colour for legend*/
+			  color: #555; 
+			} 
+			.legend i { 
+			  /*position and size of colours*/
+			width: 50px; height: 20px; 
+			float: left; 
+			/*space between colour and number*/
+			margin-right: 20px; 
+			opacity: 0.7; 
+			}
+
+			/*CSS style for legend info control */
+				/*NOTE: legend colour and pop numbers only look alinged if web browser default is net to 100% zoom*/
+			.info { 
+			  padding: 10px 15px; 
+			  /*text format and colours*/
+			  font: 16px/20px Arial, Helvetica, 
+			  sans-serif; 
+			  background: white; 
+			  background: rgba(255,255,255,0.8); 
+			  box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+			  border-radius: 5px; 
+			} 
+			/* size and colour for legend heading*/
+			.info h4 { 
+			  margin: 0 0 10px; 
+			  color: #555; 
+			}
+
+			/* CSS style for Container elements */
+			section {
+	            position: absolute;
+	            right: 10px;
+	            width: 300px;
+	            /* Distance from top */
+	            margin: 15px auto;
+	            padding: 0 15px;
+	            /* (Red, Green, Blue, Transperancy) */
+	            background: rgba(255, 255, 255, 0.8);
+	            box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+	            /* Curved Edges */
+	            border-radius: 5px;
+	            /* Stack order of element. Higher z-index value is placed infront of element with lower value. Ensures Container is on top with 800 */
+	            z-index: 800;
+       		}
+
+        	/* Paragraph text elements */
+			p {
+			    font-size: .9em;
+			    line-height: 1.5em;
+			 }
+
+			 /* Rule for mobile phones and devices where the browser window is smaller than 768px */
+       		 @media screen and (max-width:768px) {
+           		 body {
+             		 overflow: hidden
+            		}            
+            	section {
+             		width: 85%;
+             		bottom:15px;
+             		max-height:100px;
+              		overflow: auto;
+            	}
+        	}   
+	</style>
+
+</head>
+
+
+<body>
+
+
+	<!--Declare map div container to place the map inside on the page -->
+	<div id="mapid"></div>
+
+	<!-- Container to display text content -->
+	 <section>
+
+	 <!-- Heading -->
+        <h1>City of Mississauga: Public WiFi Locations and Population by Ward</h1>
+
+        <!-- Paragraph in Bold-->
+        <p><b> Mississauga is a city in the Canadian province of Ontario. It is situated on the shores of Lake Ontario in the Regional Municipality of Peel, bordering Toronto. With a total population of 721,599 as of the 2016 census, Mississauga is the sixth-most populous municipality in Canada.</b></p>
+
+        <!-- Second Paragraph with first two words in bold -->
+        <p><b>Wards and Wifi:</b> A ward is a local authority area. The City of Mississauga has 11 wards and coincillors. The current map shows the total population of each ward by hovering over it, as well as the location of public wifi hotspots within them.</p>
+
+        <!-- Third Paragraphy with simple default text-->
+        <p>The City current has 42 public wifi locations. This map can be used to identify certain wards that are overserviced or underserviced in public wifi locations. Wards that have a larger population should also have more public wifi locations. </p>
+
+    </section>
+
+	<!--Javascript map functions-->
+	<script>
+		// Zooms to this location.setView ([lat#, lon#], zoom level) 
+		// The smaller the zoom level number the more zoomed out the map
+		var mymap = L.map("mapid").setView([43.600412, -79.684396], 11);
+
+		// Uses custom tiles taken from https://leaflet-extras.github.io/leaflet-providers/preview/
+		L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+		subdomains: 'abcd',
+		// Lets you zoom in more than the set 11
+		maxZoom: 19
+		}).addTo(mymap);
+
+
+
+		// custom info control
+		var info = L.control({position: "topleft"});
+
+		info.onAdd = function (map) {
+		  // creates div with a class "info"
+		  this._div = L.DomUtil.create("div", "info"); 
+		  this.update();
+		  return this._div;
+		};
+
+		//create updates based on the feature properties hovered over
+		info.update = function (props) {
+		  this._div.innerHTML = "<h4>Mississauga Ward Polulation</h4>" +  (props ?
+		    "<b>" + "Ward " + props.ward + "</b> <br />" + props.population
+		    : "Hover over a Ward");
+		};
+		info.addTo(mymap);
+
+
+
+		//Custom legend control
+		var legend = L.control({position: "topleft"});
+
+		legend.onAdd = function (map) {
+		  //text number range format in legend
+		  var div = L.DomUtil.create("div", "info legend"),
+		    grades = [0, 40000, 45000, 50000, 60000, 70000],
+		    labels = [],
+		    from, to;
+
+		    //loop through population intervals and generate a lable with coloured square respectively
+		  for (var i = 0; i < grades.length; i++) {
+		    from = grades[i];
+		    to = grades[i + 1];
+		    labels.push(
+		      '<i style="background:' + getColor(from + 1) + '"></i> ' +
+		      from + (to ? '&ndash;' + to : '+'));
+		  }
+		  div.innerHTML = labels.join("<br>");
+		  return div;
+		};
+		legend.addTo(mymap);
+
+
+		// get color depending on population value. Colour values from http://colorbrewer2.org/#type=sequential&scheme=Blues&n=7
+		function getColor(d) {
+		    return d > 70000 ? "#084594" :
+		           d > 60000  ? "#2171b5" :
+		           d > 50000  ? "#4292c6" :
+		           d > 45000  ? "#6baed6" :
+		           d > 40000   ? "#9ecae1" :
+		           d > 0   ? "#c6dbef" :
+		                      "#eff3ff" ;
+		}
+
+
+		//define style function based on POPULATION
+		function style(feature) {
+		    return {
+		      //adding dashed stroke lines so ward shape boundaries 
+		        fillColor: getColor(feature.properties.population),
+		        weight: 2,
+		        opacity: 1,
+		        color: "white",
+		        dashArray: "3",
+		        fillOpacity: 0.7
+		    };
+		}
+
+		//adding interation here
+		function highlightFeature(e) {
+		    var layer = e.target;
+		    //hovering changes style of shape temporarily
+		    layer.setStyle({
+		      weight: 5,
+		      color: "#666",
+		      dashArray: '',
+		      fillOpacity: 0.7
+		    });
+		    //updates information in ledgend based on hover locatioin
+		    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+		      layer.bringToFront();
+		    }
+		    info.update(layer.feature.properties);
+		  }
+
+
+
+		// declaring the layer for wards    
+		var geojson;
+		//define what happens on mouse out. resets layer style to default 
+		function resetHighlight(e) {
+		  geojson.resetStyle(e.target);
+		  info.update();
+		}
+		//chen you click on ward it zooms to that ward
+		function zoomToFeature(e) {
+		  mymap.fitBounds(e.target.getBounds());
+		}
+		//add listener on ward layer
+		function onEachFeature(feature, layer) {
+		  layer.on({
+		    mouseover: highlightFeature,
+		    mouseout: resetHighlight,
+		    click: zoomToFeature
+		  });
+		}
+		// This loads the ward GeoJSON map data file 
+		$.getJSON('https://raw.githubusercontent.com/AthenaAli/mississauga-wards/master/2016_Ward_Population.geojson', function(data) {
+		geojson = L.geoJson(data, {
+		style: style,
+		onEachFeature: onEachFeature
+		// add ward GeoJSON layer to the map
+		}).addTo(mymap);	
+		});
+
+
+
+// ??? NOTE: SUPPOSED TO ALLOW YOU TO CLICK ON WIFI POINT AND IT WILL POPUP LOCATION DESCERIPTION "DESCRIPT" - DOES NOT WORK -- IDK - SOMETING TO DO WITH FUNCTION "onEachFeature" WAS USED ALREAD ?
+		function onEachFeature2(feature2, layer2) {
+			var popupContent = feature2.properties.DESCRIPT;
+			if (feature2.properties && feature2.properties.popupContent) {
+				popupContent += feature2.properties.popupContent;
+			}
+			layer2.bindPopup(popupContent);
+		}
+
+		// declaring the additional layer for Public WiFi 
+		var geojsonWiFi;
+		// This loads the GeoJSON map data file 
+		$.getJSON('https://raw.githubusercontent.com/AthenaAli/mississauga-wards/master/PublicWiFi.geojson', function(json) {
+			geojsonWiFi = L.geoJson(json, {
+			// style polygon and line features same way 
+			style: style,
+			// a function that gets called on each feature before adding it to a GeoJSON layer2. A common reason to use this option is to attach a popup to features when they are clicked.
+			onEachFeature2: onEachFeature2,
+			// add additonal Public Wifi GeoJSON layer to the map
+			}).addTo(mymap);
+
+		});
+
+	</script>
+</body>
+</html>
